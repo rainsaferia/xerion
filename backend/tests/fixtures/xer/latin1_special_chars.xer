@@ -1,0 +1,9 @@
+ERMHDR	8.2	2026-11-05	USER	DATABASE
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date
+%R	5001	LATIN-PRJ	Projet d'Ingénierie & Construction Française	2026-11-01 08:00
+%T	TASK
+%F	task_id	proj_id	task_code	task_name	status_code
+%R	8001	5001	ACT-01	Étude de faisabilité préliminaire	TK_Complete
+%R	8002	5001	ACT-02	Montage des pièces préfabriquées	TK_Active
+%E

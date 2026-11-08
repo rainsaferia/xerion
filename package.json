@@ -1,0 +1,23 @@
+{
+  "name": "project-intelligence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Command entrypoints for the monorepo. Backend deps via uv, frontend via npm.",
+  "scripts": {
+    "deps:up": "docker compose up -d --wait",
+    "deps:down": "docker compose down",
+    "dev:api": "uv run --project backend uvicorn app.main:app --reload --app-dir backend --port 8000",
+    "dev:web": "npm --prefix frontend run dev",
+    "lint": "npm run lint:api && npm run lint:web",
+    "lint:api": "cd backend && uv run ruff check . && uv run ruff format --check .",
+    "lint:web": "npm --prefix frontend run lint",
+    "format": "cd backend && uv run ruff format . && uv run ruff check --fix .",
+    "typecheck": "npm run typecheck:api && npm run typecheck:web",
+    "typecheck:api": "cd backend && uv run mypy",
+    "typecheck:web": "npm --prefix frontend run typecheck",
+    "test": "npm run test:api && npm run test:web",
+    "test:api": "cd backend && uv run pytest",
+    "test:web": "npm --prefix frontend test",
+    "check": "npm run lint && npm run typecheck && npm test"
+  }
+}

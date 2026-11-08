@@ -1,0 +1,29 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Client/project data must never be committed (use sanitized fixtures in tests/fixtures only)
+*.xer
+!backend/tests/fixtures/**/*.xer
+/uploads/
+/storage/
+
+.DS_Store
+

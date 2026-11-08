@@ -1,0 +1,23 @@
+ERMHDR	20.12	2026-11-05	PM_LEAD	P6_EPPM
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date	plan_start_date	status_code
+%R	2001	OFFSHORE-PIPE	Offshore Subsea Pipeline Package	2026-10-31 18:00	2026-02-01 07:00	PS_Active
+%T	CALENDAR
+%F	clndr_id	clndr_name	default_flag	clndr_type
+%R	601	Offshore 12-Hour Shift	Y	CA_Base
+%T	PROJWBS
+%F	wbs_id	proj_id	parent_wbs_id	wbs_short_name	wbs_name
+%R	201	2001		PIPE	Subsea Pipeline Lineage Root
+%R	202	2001	201	PIPE.SURVEY	Geophysical Survey
+%R	203	2001	201	PIPE.LAY	Pipelay Operations
+%T	TASK
+%F	task_id	proj_id	wbs_id	clndr_id	task_code	task_name	status_code	target_start_date	target_end_date	act_start_date	act_end_date	target_durn	remain_durn	total_float_hr_cnt	free_float_hr_cnt	phys_complete_pct
+%R	4001	2001	202	601	SURV-01	Bathymetric Route Survey	TK_Complete	2026-02-01 07:00	2026-03-15 19:00	2026-02-01 07:00	2026-03-14 19:00	504	0	0	0	100
+%R	4002	2001	203	601	LAY-01	Section 1 Pipelay (KM 0-25)	TK_Active	2026-03-16 07:00	2026-05-30 19:00	2026-03-16 07:00		900	450	-16	-16	50
+%R	4003	2001	203	601	LAY-02	Section 2 Pipelay (KM 25-50)	TK_NotStart	2026-06-01 07:00	2026-08-15 19:00			900	900	-16	-16	0
+%T	TASKPRED
+%F	task_pred_id	task_id	pred_task_id	pred_type	lag_hr_cnt
+%R	5001	4002	4001	PR_FS	0
+%R	5002	4003	4002	PR_FS	12
+%E
+

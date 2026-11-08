@@ -1,0 +1,13 @@
+ERMHDR	19.12	2026-11-05	MINIMAL_EXPORT	P6_PROD
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date	plan_start_date
+%R	3001	MINIMAL-01	Minimal Project Without Optional Tables	2026-11-01 08:00	2026-01-01 08:00
+%T	PROJWBS
+%F	wbs_id	proj_id	wbs_short_name	wbs_name
+%R	301	3001	MIN	Minimal Root
+%T	TASK
+%F	task_id	proj_id	wbs_id	task_code	task_name	status_code	target_start_date	target_end_date
+%R	6001	3001	301	TASK-1	Standalone Milestone	TK_Complete	2026-01-01 08:00	2026-01-01 08:00
+%R	6002	3001	301	TASK-2	Standalone Work Package	TK_Active	2026-01-02 08:00	2026-01-10 17:00
+%E
+

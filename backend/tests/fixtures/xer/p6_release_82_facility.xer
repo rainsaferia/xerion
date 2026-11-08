@@ -1,0 +1,33 @@
+ERMHDR	8.2	2026-11-05	EPC_ADMIN	P6_PROD
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date	plan_start_date	status_code
+%R	1001	GPF-FACILITY	Gas Processing Facility EPC	2026-11-01 08:00	2026-01-15 08:00	PS_Active
+%T	CALENDAR
+%F	clndr_id	clndr_name	default_flag	clndr_type
+%R	501	Standard 5 Day Workweek	Y	CA_Base
+%R	502	Continuous 7 Day Operation	N	CA_Base
+%T	PROJWBS
+%F	wbs_id	proj_id	parent_wbs_id	wbs_short_name	wbs_name
+%R	101	1001		GPF	Gas Processing Facility Root
+%R	102	1001	101	GPF.ENG	Detailed Engineering
+%R	103	1001	101	GPF.PROC	Procurement & Packages
+%R	104	1001	101	GPF.CONST	Civil & Mechanical Construction
+%T	TASK
+%F	task_id	proj_id	wbs_id	clndr_id	task_code	task_name	status_code	target_start_date	target_end_date	act_start_date	act_end_date	target_durn	remain_durn	total_float_hr_cnt	free_float_hr_cnt	phys_complete_pct
+%R	2001	1001	102	501	ENG-100	Process Flow Diagrams (PFD)	TK_Complete	2026-01-15 08:00	2026-02-15 17:00	2026-01-15 08:00	2026-02-14 17:00	176	0	0	0	100
+%R	2002	1001	102	501	ENG-200	Piping & Instrumentation Diagrams (P&ID)	TK_Active	2026-02-15 08:00	2026-04-30 17:00	2026-02-16 08:00		440	220	0	0	50
+%R	2003	1001	103	501	PROC-100	Long Lead Compressor Procurement	TK_Active	2026-03-01 08:00	2026-09-30 17:00	2026-03-01 08:00		1232	880	40	40	30
+%R	2004	1001	104	501	CONST-100	Compressor Foundation Civil Works	TK_NotStart	2026-08-01 08:00	2026-10-15 17:00			440	440	80	80	0
+%R	2005	1001	104	502	CONST-200	Compressor Train Installation	TK_NotStart	2026-10-16 08:00	2026-12-15 17:00			352	352	0	0	0
+%T	TASKPRED
+%F	task_pred_id	task_id	pred_task_id	pred_type	lag_hr_cnt
+%R	3001	2002	2001	PR_FS	0
+%R	3002	2003	2002	PR_SS	40
+%R	3003	2004	2002	PR_FS	0
+%R	3004	2005	2003	PR_FS	0
+%R	3005	2005	2004	PR_FS	0
+%T	UDFTYPE
+%F	udf_type_id	udf_type_name	table_name	data_type
+%R	901	EPC Area Code	TASK	FT_TEXT
+%E
+

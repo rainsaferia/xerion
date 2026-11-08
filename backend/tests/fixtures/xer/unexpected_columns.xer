@@ -1,0 +1,9 @@
+ERMHDR	21.12	2026-11-05	CUSTOM_EXP	P6_PROD
+%T	PROJECT
+%F	proj_id	proj_short_name	proj_name	last_recalc_date	custom_client_ref	future_flag
+%R	4001	UNEXPECTED-COL	Project with Custom Unrecognized Columns	2026-11-01 08:00	CLIENT-REF-999	TRUE
+%T	TASK
+%F	task_id	proj_id	task_code	task_name	future_calculated_cost	contractor_tag
+%R	7001	4001	UNEXP-01	Task with extra metadata	154000.50	CONTRACTOR-ALPHA
+%E
+
