@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { MarkdownMessage } from "./markdown-message";
 import {
   QUESTION_STARTERS,
   VALIDATION_BADGE_CONFIG,
@@ -20,6 +21,7 @@ export interface AiAssistantViewProps {
   projectName?: string;
   activeVersionLabel?: string;
   dataDate?: string;
+  selectedConversationId?: string;
   initialConversations?: ConversationResponse[];
   token?: string;
 }
@@ -40,12 +42,13 @@ export function AiAssistantView({
   projectName = "Project Schedule",
   activeVersionLabel = "Latest Confirmed",
   dataDate,
+  selectedConversationId,
   initialConversations = [],
   token,
 }: AiAssistantViewProps) {
   const [conversations, setConversations] = useState<ConversationResponse[]>(initialConversations);
   const [activeConvId, setActiveConvId] = useState<string | null>(
-    initialConversations[0]?.id ?? null
+    selectedConversationId ?? initialConversations[0]?.id ?? null
   );
   const [activeConversation, setActiveConversation] = useState<ConversationResponse | null>(
     initialConversations[0] ?? null
@@ -66,8 +69,11 @@ export function AiAssistantView({
         if (!isMounted) return;
         setConversations(list);
         if (list.length > 0) {
-          setActiveConvId(list[0].id);
-          setActiveConversation(list[0]);
+          const target = selectedConversationId
+            ? list.find((c) => c.id === selectedConversationId) ?? list[0]
+            : list[0];
+          setActiveConvId(target.id);
+          setActiveConversation(target);
         }
       } catch (err) {
         if (!isMounted) return;
@@ -78,7 +84,7 @@ export function AiAssistantView({
     return () => {
       isMounted = false;
     };
-  }, [projectId, token, initialConversations.length]);
+  }, [projectId, token, initialConversations.length, selectedConversationId]);
 
   // 2. Load active conversation details when selection changes
   useEffect(() => {
@@ -160,7 +166,8 @@ export function AiAssistantView({
         projectId,
         convId,
         { message: text },
-        token
+        token,
+        { timeoutMs: 300000 }
       );
 
       // Append assistant message with tool executions
@@ -195,30 +202,30 @@ export function AiAssistantView({
   };
 
   return (
-    <div className="flex h-[820px] w-full max-w-7xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg overflow-hidden text-slate-900 dark:text-slate-100 font-sans">
+    <div className="flex h-210 w-full max-w-7xl mx-auto rounded-2xl border border-slate-800 bg-slate-900/90 shadow-2xl backdrop-blur-xl overflow-hidden text-slate-100 font-sans">
       {/* =========================================================================
           LEFT SIDEBAR: Conversation Sessions
           ========================================================================= */}
-      <aside className="w-80 border-r border-slate-200 dark:border-slate-800 flex flex-col bg-slate-50/50 dark:bg-slate-900/50">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+      <aside className="w-72 lg:w-80 border-r border-slate-800 flex flex-col bg-slate-950/70 shrink-0">
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-            <h2 className="text-sm font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
+            <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+            <h2 className="text-xs font-semibold tracking-wider uppercase text-slate-400">
               Conversations
             </h2>
           </div>
           <button
             onClick={handleCreateNewChat}
             data-testid="new-chat-button"
-            className="px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 rounded-lg border border-blue-200 dark:border-blue-900 transition-colors"
+            className="px-3 py-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-950/60 rounded-lg border border-blue-800/80 transition-colors shadow-sm"
           >
             + New Chat
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+        <div className="flex-1 overflow-y-auto p-3 space-y-1.5 scrollbar-thin scrollbar-thumb-slate-800">
           {conversations.length === 0 ? (
-            <div className="text-center py-8 text-xs text-slate-400 dark:text-slate-500">
+            <div className="text-center py-8 text-xs text-slate-500">
               No previous conversations. Start a new analysis session.
             </div>
           ) : (
@@ -231,12 +238,12 @@ export function AiAssistantView({
                   data-testid={`conv-item-${c.id}`}
                   className={`w-full text-left p-3 rounded-xl text-xs transition-all flex flex-col gap-1 border ${
                     isSelected
-                      ? "bg-white dark:bg-slate-800 border-blue-500/40 shadow-sm text-slate-900 dark:text-white"
-                      : "border-transparent hover:bg-slate-100/70 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400"
+                      ? "bg-slate-800/90 border-blue-500/60 shadow-md text-white ring-1 ring-blue-500/30"
+                      : "border-transparent hover:bg-slate-850/60 text-slate-400 hover:text-slate-200"
                   }`}
                 >
                   <div className="font-medium truncate">{c.title || "Untitled Session"}</div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500">
+                  <div className="text-[10px] text-slate-500">
                     {new Date(c.created_at).toLocaleDateString(undefined, {
                       month: "short",
                       day: "numeric",
@@ -254,31 +261,32 @@ export function AiAssistantView({
       {/* =========================================================================
           CENTER WORKSPACE: Active Conversation & Context Header
           ========================================================================= */}
-      <section className="flex-1 flex flex-col bg-white dark:bg-slate-900">
+      <section className="flex-1 flex flex-col bg-slate-900/60 min-w-0">
         {/* Context Topbar */}
-        <header className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/30 dark:bg-slate-900/30">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-lg font-bold tracking-tight">{projectName}</h1>
+        <header className="px-6 py-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/50 backdrop-blur-md">
+          <div className="min-w-0 pr-4">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-base font-bold tracking-tight text-white truncate max-w-md">{projectName}</h1>
               <span
                 data-testid="version-badge"
-                className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-950/90 text-blue-300 border border-blue-800"
               >
                 Analyzed Version: {activeVersionLabel}
               </span>
               {dataDate && (
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="text-xs font-mono text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700/60">
                   Data Date: {dataDate}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-1">
               Deterministic schedule reasoning powered by validated domain engines.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-2.5 py-1 text-[11px] font-medium bg-emerald-950/80 text-emerald-300 border border-emerald-800 rounded-md shadow-sm flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               CPM Engine Active
             </span>
           </div>
@@ -288,12 +296,12 @@ export function AiAssistantView({
         {error && (
           <div
             role="alert"
-            className="p-3 mx-6 mt-4 text-xs bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900 rounded-lg flex items-center justify-between"
+            className="p-3 mx-6 mt-4 text-xs bg-red-950/60 text-red-300 border border-red-900/80 rounded-lg flex items-center justify-between"
           >
             <span>{error}</span>
             <button
               onClick={() => setError(null)}
-              className="text-red-500 hover:text-red-700 font-bold ml-2"
+              className="text-red-400 hover:text-red-200 font-bold ml-2"
             >
               ×
             </button>
@@ -301,18 +309,18 @@ export function AiAssistantView({
         )}
 
         {/* Message Stream */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-slate-800">
           {isLoadingHistory ? (
             <div className="flex items-center justify-center h-48 text-xs text-slate-400">
               Loading conversation history...
             </div>
           ) : !activeConversation || activeConversation.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto py-12">
-              <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl font-bold mb-4 border border-blue-100 dark:border-blue-900">
+              <div className="h-12 w-12 rounded-2xl bg-blue-950/70 text-blue-400 flex items-center justify-center text-xl font-bold mb-4 border border-blue-800 shadow-inner">
                 PI
               </div>
-              <h3 className="text-base font-semibold">How can I assist your schedule today?</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <h3 className="text-base font-semibold text-slate-100">How can I assist your schedule today?</h3>
+              <p className="text-xs text-slate-400 mt-1">
                 Ask about critical float exposure, schedule quality diagnostics, activity logic,
                 or compare changes against baselines.
               </p>
@@ -324,37 +332,42 @@ export function AiAssistantView({
                 <div
                   key={msg.id}
                   data-testid={`message-${msg.id}`}
-                  className={`flex gap-4 ${isUser ? "justify-end" : "justify-start"}`}
+                  className={`flex gap-3.5 ${isUser ? "justify-end" : "justify-start"}`}
                 >
                   {!isUser && (
-                    <div className="h-8 w-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                    <div className="h-8 w-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
                       AI
                     </div>
                   )}
 
                   <div
-                    className={`max-w-2xl rounded-2xl p-4 text-sm leading-relaxed space-y-3 ${
+                    className={`max-w-[85%] lg:max-w-3xl rounded-2xl p-4 text-sm leading-relaxed space-y-3 ${
                       isUser
-                        ? "bg-blue-600 text-white rounded-br-none shadow-sm"
-                        : "bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-800 rounded-bl-none shadow-sm"
+                        ? "bg-blue-600 text-white rounded-br-none shadow-md ring-1 ring-blue-400/30"
+                        : "bg-slate-950/80 border border-slate-800 rounded-bl-none shadow-lg text-slate-200"
                     }`}
                   >
                     {/* Assistant Header: Validation Status Badge */}
                     {!isUser && (
-                      <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
+                      <div className="flex items-center gap-2 pb-2 border-b border-slate-800/80">
                         {renderValidationBadge(msg)}
                       </div>
                     )}
 
-                    {/* Content text */}
-                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                    {/* Content text: Rendered with MarkdownMessage for Assistant */}
+                    {isUser ? (
+                      <div className="whitespace-pre-wrap leading-relaxed">{msg.content}</div>
+                    ) : (
+                      <MarkdownMessage content={msg.content ?? ""} />
+                    )}
 
                     {/* How this was analyzed: Tool Executions Accordion */}
                     {!isUser && msg.tool_executions && msg.tool_executions.length > 0 && (
-                      <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2">
-                        <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                          How this was analyzed ({msg.tool_executions.length} tool
-                          {msg.tool_executions.length > 1 ? "s" : ""})
+                      <div className="mt-4 pt-3 border-t border-slate-800/80 space-y-2">
+                        <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <span>⚡</span>
+                          <span>How this was analyzed ({msg.tool_executions.length} tool
+                          {msg.tool_executions.length > 1 ? "s" : ""})</span>
                         </div>
 
                         {msg.tool_executions.map((te: ToolExecutionItem) => {
@@ -363,27 +376,27 @@ export function AiAssistantView({
                             <div
                               key={te.id}
                               data-testid={`tool-exec-${te.id}`}
-                              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 text-xs"
+                              className="rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 text-xs text-slate-300 shadow-sm"
                             >
                               <div
                                 onClick={() => toggleToolExpanded(te.id)}
-                                className="flex items-center justify-between cursor-pointer select-none"
+                                className="flex items-center justify-between cursor-pointer select-none hover:text-white transition-colors"
                               >
                                 <div className="flex items-center gap-2">
-                                  <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
+                                  <span className="font-mono font-semibold text-blue-400">
                                     {te.tool_name}
                                   </span>
                                   <span
-                                    className={`px-1.5 py-0.2 text-[10px] rounded font-medium ${
+                                    className={`px-1.5 py-0.5 text-[10px] rounded font-medium ${
                                       te.status === "completed"
-                                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                        : "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300"
+                                        ? "bg-emerald-950 text-emerald-300 border border-emerald-800/60"
+                                        : "bg-red-950 text-red-300 border border-red-800/60"
                                     }`}
                                   >
                                     {te.status}
                                   </span>
                                 </div>
-                                <div className="flex items-center gap-2 text-slate-400">
+                                <div className="flex items-center gap-2 text-slate-400 text-[11px]">
                                   <span>{formatToolDuration(te.duration_ms)}</span>
                                   <span>{isExpanded ? "▲" : "▼"}</span>
                                 </div>
@@ -391,10 +404,10 @@ export function AiAssistantView({
 
                               {/* Accordion detail */}
                               {isExpanded && (
-                                <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] space-y-2">
+                                <div className="mt-2.5 pt-2 border-t border-slate-800 text-[11px] space-y-2">
                                   <div>
                                     <span className="text-slate-400">Input Arguments:</span>
-                                    <pre className="mt-1 p-2 bg-slate-50 dark:bg-slate-950 rounded font-mono text-[10px] overflow-x-auto">
+                                    <pre className="mt-1 p-2 bg-slate-950/90 rounded border border-slate-800 font-mono text-[10px] overflow-x-auto text-slate-300">
                                       {JSON.stringify(te.arguments, null, 2)}
                                     </pre>
                                   </div>
@@ -407,7 +420,7 @@ export function AiAssistantView({
                                           <span
                                             key={i}
                                             data-testid="evidence-badge"
-                                            className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono text-[10px] border border-blue-200 dark:border-blue-900"
+                                            className="px-2 py-0.5 rounded bg-blue-950/80 text-blue-300 font-mono text-[10px] border border-blue-800"
                                           >
                                             {formatEvidenceCitation(ev)}
                                           </span>
@@ -425,7 +438,7 @@ export function AiAssistantView({
                   </div>
 
                   {isUser && (
-                    <div className="h-8 w-8 rounded-lg bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                    <div className="h-8 w-8 rounded-lg bg-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-md">
                       You
                     </div>
                   )}
@@ -435,22 +448,22 @@ export function AiAssistantView({
           )}
 
           {isSending && (
-            <div className="flex gap-3 items-center text-xs text-slate-500 animate-pulse pl-12">
-              <span className="h-2 w-2 rounded-full bg-blue-600" />
+            <div className="flex gap-3 items-center text-xs text-blue-400 animate-pulse pl-12">
+              <span className="h-2 w-2 rounded-full bg-blue-500 animate-ping" />
               <span>Analyzing schedule with deterministic domain tools...</span>
             </div>
           )}
         </div>
 
         {/* Question Starter Chips */}
-        <div className="px-6 py-2 border-t border-slate-100 dark:border-slate-800 flex gap-2 overflow-x-auto bg-slate-50/20 dark:bg-slate-900/20">
+        <div className="px-6 py-2.5 border-t border-slate-800/80 flex gap-2 overflow-x-auto bg-slate-950/40">
           {QUESTION_STARTERS.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleSendMessage(q)}
               disabled={isSending}
               data-testid={`starter-chip-${idx}`}
-              className="px-3 py-1.5 rounded-full text-xs bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 whitespace-nowrap transition-colors border border-slate-200/60 dark:border-slate-700/60 disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded-full text-xs bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white whitespace-nowrap transition-colors border border-slate-700/70 disabled:opacity-50 shadow-sm"
             >
               {q}
             </button>
@@ -458,7 +471,7 @@ export function AiAssistantView({
         </div>
 
         {/* Chat Composer */}
-        <footer className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <footer className="p-4 border-t border-slate-800/80 bg-slate-950/60 backdrop-blur-md">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -473,13 +486,13 @@ export function AiAssistantView({
               placeholder="Ask about critical activities, float, quality, or comparisons..."
               disabled={isSending}
               data-testid="chat-input"
-              className="flex-1 rounded-xl px-4 py-2.5 text-sm bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="flex-1 rounded-xl px-4 py-2.5 text-sm bg-slate-950/80 border border-slate-700/80 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/80 focus:border-blue-500 disabled:opacity-50 shadow-inner"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim() || isSending}
               data-testid="send-message-button"
-              className="px-5 py-2.5 rounded-xl font-medium text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl font-medium text-sm bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSending ? "Analyzing..." : "Send"}
             </button>

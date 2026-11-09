@@ -274,7 +274,7 @@ Build vertical slices. Each sprint must produce a testable outcome. Do not build
 - AI evaluation set covers direct questions, version comparison, missing data, ambiguous ID, and prompt injection.
 - Numeric answers match engine outputs.
 
-### PI-053 — Deployment and runbook
+### PI-053 — Deployment and runbook `[DONE]`
 
 **Acceptance criteria**
 - Frontend, API, worker, DB, Redis and storage deployed.

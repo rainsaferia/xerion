@@ -41,8 +41,10 @@ class Settings(BaseSettings):
     ai_model: str = "gpt-4o"
     ai_api_key: SecretStr | None = None
     ai_base_url: str | None = None
-    ai_timeout_seconds: float = Field(default=30.0, gt=0, le=120)
+    ai_timeout_seconds: float = Field(default=120.0, gt=0, le=300)
     ai_max_retries: int = Field(default=3, ge=0, le=10)
+    # Optional reasoning effort hint for reasoning models ("low" | "medium" | "high").
+    ai_reasoning_effort: str | None = None
 
 
 @lru_cache

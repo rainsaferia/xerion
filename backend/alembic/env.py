@@ -24,9 +24,7 @@ target_metadata = Base.metadata
 
 
 def get_url() -> str:
-    url = config.get_main_option("sqlalchemy.url")
-    if not url:
-        url = get_settings().database_url
+    url = get_settings().database_url or config.get_main_option("sqlalchemy.url")
     return make_sync_url(url)
 
 

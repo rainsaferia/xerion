@@ -131,12 +131,13 @@ async def create_version_from_confirmed_job(
         )
     await session.flush()
 
-    # 7. Persist Activities
+    # 7. Persist Activities (chunked flush for large P6 schedules)
     act_map: dict[str, uuid.UUID] = {}
     start_dates: list[date] = []
     finish_dates: list[date] = []
+    CHUNK_SIZE = 1000
 
-    for a in schedule.activities:
+    for idx, a in enumerate(schedule.activities):
         act_id = uuid.uuid4()
         act_map[a.source_id] = act_id
         if a.start_date:
@@ -175,9 +176,12 @@ async def create_version_from_confirmed_job(
                 source_fields=a.source_fields,
             )
         )
+        if (idx + 1) % CHUNK_SIZE == 0:
+            await session.flush()
     await session.flush()
 
-    # 8. Persist Relationships
+    # 8. Persist Relationships (chunked flush)
+    rel_count = 0
     for r in schedule.relationships:
         pred_uuid = act_map.get(r.predecessor_source_id)
         succ_uuid = act_map.get(r.successor_source_id)
@@ -198,6 +202,9 @@ async def create_version_from_confirmed_job(
                     source_fields=r.source_fields,
                 )
             )
+            rel_count += 1
+            if rel_count % CHUNK_SIZE == 0:
+                await session.flush()
     await session.flush()
 
     # 9. Persist Baselines

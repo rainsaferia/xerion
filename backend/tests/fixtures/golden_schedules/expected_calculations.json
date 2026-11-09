@@ -1,0 +1,56 @@
+{
+  "rev0": {
+    "total_activities": 15,
+    "status_counts": {
+      "not_started": 14,
+      "in_progress": 0,
+      "complete": 1,
+      "suspended": 0,
+      "unknown": 0
+    },
+    "critical_path": {
+      "activity_count": 8,
+      "activity_codes": ["A1000", "A1010", "A1020", "A1040", "A1050", "A1090", "A1110", "A1130"],
+      "finish_date": "2026-07-15"
+    },
+    "float_distribution": {
+      "negative": 0,
+      "zero": 10,
+      "near_critical": 1,
+      "moderate": 1,
+      "high": 3
+    }
+  },
+  "rev1": {
+    "total_activities": 16,
+    "status_counts": {
+      "not_started": 9,
+      "in_progress": 3,
+      "complete": 4,
+      "suspended": 0,
+      "unknown": 0
+    },
+    "critical_path": {
+      "activity_count": 8,
+      "activity_codes": ["A1000", "A1010", "A1020", "A1040", "A1050", "A1090", "A1110", "A1130"],
+      "finish_date": "2026-07-20",
+      "negative_float_days": -5.0
+    },
+    "float_distribution": {
+      "negative": 7,
+      "zero": 4,
+      "near_critical": 1,
+      "moderate": 2,
+      "high": 2
+    }
+  },
+  "comparison": {
+    "matched": 15,
+    "added": 1,
+    "removed": 0,
+    "ambiguous": 0,
+    "added_codes": ["A1150"],
+    "finish_slippage_days": 5
+  }
+}
+

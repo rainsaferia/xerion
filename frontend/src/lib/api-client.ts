@@ -3,6 +3,49 @@
  * Server-side only for now: API_BASE_URL is not exposed to the browser.
  */
 
+export interface ProjectListItem {
+  id: string;
+  workspace_id: string;
+  name: string;
+  project_code: string | null;
+  description: string | null;
+  industry: string;
+  client_name: string | null;
+  contractor_name: string | null;
+  currency_code: string | null;
+  timezone: string;
+  status: string;
+  latest_version_id: string | null;
+  created_at: string;
+}
+
+export interface CreateProjectPayload {
+  name: string;
+  project_code?: string;
+  description?: string;
+  industry?: string;
+  client_name?: string;
+  contractor_name?: string;
+  currency_code?: string;
+  timezone?: string;
+}
+
+export interface UploadSessionPayload {
+  filename: string;
+  file_size_bytes?: number;
+  content_type?: string;
+}
+
+export interface UploadSessionResponse {
+  file_id: string;
+  project_id: string;
+  upload_method: string;
+  upload_url: string;
+  expires_at: string;
+  required_headers: Record<string, string>;
+  max_size_bytes: number;
+}
+
 export interface LiveResponse {
   status: string;
   version: string;
@@ -688,7 +731,11 @@ export class ApiError extends Error {
 }
 
 export function apiBaseUrl(): string {
-  return process.env.API_BASE_URL ?? "http://localhost:8000";
+  return (
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.API_BASE_URL ??
+    "http://127.0.0.1:8000"
+  );
 }
 
 interface RequestOptions {
@@ -701,8 +748,9 @@ function buildHeaders(options?: RequestOptions): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/json",
   };
-  if (options?.token) {
-    headers.Authorization = `Bearer ${options.token}`;
+  const token = options?.token ?? process.env.NEXT_PUBLIC_DEV_TOKEN;
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
   return headers;
 }
@@ -730,7 +778,7 @@ async function getJson<T>(path: string, options?: RequestOptions): Promise<T> {
     method: "GET",
     headers: buildHeaders(options),
     cache: "no-store",
-    signal: AbortSignal.timeout(options?.timeoutMs ?? 5000),
+    signal: AbortSignal.timeout(options?.timeoutMs ?? 30000),
   });
   return handleResponse<T>(res, path, options?.acceptStatuses);
 }
@@ -745,7 +793,7 @@ async function postJson<T>(path: string, body?: unknown, options?: RequestOption
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
     cache: "no-store",
-    signal: AbortSignal.timeout(options?.timeoutMs ?? 5000),
+    signal: AbortSignal.timeout(options?.timeoutMs ?? 30000),
   });
   return handleResponse<T>(res, path, options?.acceptStatuses);
 }
@@ -755,7 +803,7 @@ async function delJson<T>(path: string, options?: RequestOptions): Promise<T> {
     method: "DELETE",
     headers: buildHeaders(options),
     cache: "no-store",
-    signal: AbortSignal.timeout(options?.timeoutMs ?? 5000),
+    signal: AbortSignal.timeout(options?.timeoutMs ?? 30000),
   });
   return handleResponse<T>(res, path, options?.acceptStatuses);
 }
@@ -764,6 +812,74 @@ export const api = {
   health: () => getJson<LiveResponse>("/health"),
   // 503 is a valid, informative readiness answer ("degraded"), not a transport error.
   ready: () => getJson<ReadyResponse>("/health/ready", { acceptStatuses: [503] }),
+
+  // Projects & Workspaces
+  listProjects: (token?: string) =>
+    getJson<ProjectListItem[]>("/api/v1/projects", { token }),
+
+  createProject: (payload: CreateProjectPayload, token?: string) =>
+    postJson<ProjectListItem>("/api/v1/projects", payload, { token }),
+
+  createUploadSession: (projectId: string, payload: UploadSessionPayload, token?: string) =>
+    postJson<UploadSessionResponse>(`/api/v1/projects/${projectId}/uploads`, payload, { token }),
+
+  completeUpload: (fileId: string, token?: string) =>
+    postJson<{ id: string; status: string; import_job_id?: string }>(`/api/v1/uploads/${fileId}/complete`, undefined, { token }),
+
+  uploadScheduleFile: async (
+    projectId: string,
+    file: File,
+    token?: string
+  ): Promise<{ fileId: string; importJobId: string }> => {
+    // 1. Create upload session with backend
+    const session = await api.createUploadSession(
+      projectId,
+      {
+        filename: file.name,
+        file_size_bytes: file.size,
+        content_type: file.type || "application/octet-stream",
+      },
+      token
+    );
+
+    // 2. Upload file contents directly to backend
+    const uploadUrl = session.upload_url.startsWith("http")
+      ? session.upload_url
+      : `${apiBaseUrl()}${session.upload_url.startsWith("/") ? "" : "/"}${session.upload_url}`;
+
+    const headers: Record<string, string> = {
+      ...(session.required_headers || {}),
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const uploadRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers,
+      body: file,
+    });
+
+    if (!uploadRes.ok) {
+      let msg = `Upload storage failed: HTTP ${uploadRes.status}`;
+      try {
+        const errJson = (await uploadRes.json()) as { error?: { message?: string } };
+        if (errJson?.error?.message) {
+          msg = errJson.error.message;
+        }
+      } catch {
+        // non-JSON response
+      }
+      throw new Error(msg);
+    }
+
+    // 3. Complete upload to enqueue parser background job
+    const completed = await api.completeUpload(session.file_id, token);
+    return {
+      fileId: session.file_id,
+      importJobId: completed.import_job_id || session.file_id,
+    };
+  },
 
   // Import endpoints (PI-013, PI-014)
   getImportJob: (id: string, token?: string) =>
@@ -999,7 +1115,7 @@ export const api = {
     postJson<AgentTurnResponse>(
       `/api/v1/projects/${projectId}/ai/conversations/${conversationId}/messages`,
       payload,
-      { token, timeoutMs: options?.timeoutMs ?? 30000 }
+      { token, timeoutMs: options?.timeoutMs ?? 300000 }
     ),
 
   // Schedule Reports (PI-046)

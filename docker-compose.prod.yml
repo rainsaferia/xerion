@@ -1,0 +1,106 @@
+name: project-intelligence-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-pi_prod_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-project_intelligence_prod}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-""}
+    volumes:
+      - redisdata_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-pi_prod_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-project_intelligence_prod}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
+      STORAGE_BACKEND: local
+      STORAGE_LOCAL_DIR: /app/storage
+      UPLOAD_MAX_BYTES: 52428800
+      LOG_LEVEL: INFO
+    volumes:
+      - private_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    command: ["python", "-m", "app.workers.main"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-pi_prod_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-project_intelligence_prod}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
+      STORAGE_BACKEND: local
+      STORAGE_LOCAL_DIR: /app/storage
+      LOG_LEVEL: INFO
+    volumes:
+      - private_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import redis; r = redis.from_url(\"redis://:${REDIS_PASSWORD}@redis:6379/0\"); r.ping()' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata_prod:
+  redisdata_prod:
+  private_storage:
+

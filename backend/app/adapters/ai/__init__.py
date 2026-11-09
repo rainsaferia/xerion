@@ -42,6 +42,7 @@ def _get_openai_adapter(
     base_url: str | None,
     timeout_seconds: float,
     max_retries: int,
+    reasoning_effort: str | None = None,
 ) -> OpenAIProviderAdapter:
     s = Settings(
         ai_provider="openai",
@@ -50,6 +51,7 @@ def _get_openai_adapter(
         ai_base_url=base_url,
         ai_timeout_seconds=timeout_seconds,
         ai_max_retries=max_retries,
+        ai_reasoning_effort=reasoning_effort,
     )
     return OpenAIProviderAdapter(settings=s)
 
@@ -69,6 +71,7 @@ def get_ai_adapter(settings: Settings | None = None) -> AIProviderAdapter:
             s.ai_base_url,
             s.ai_timeout_seconds,
             s.ai_max_retries,
+            s.ai_reasoning_effort,
         )
     else:
         raise ValueError(f"Unsupported AI provider: '{s.ai_provider}'. Supported: 'mock', 'openai'")

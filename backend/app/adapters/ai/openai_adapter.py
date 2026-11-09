@@ -71,7 +71,9 @@ class OpenAIProviderAdapter:
             if msg.tool_call_id:
                 entry["tool_call_id"] = msg.tool_call_id
             if msg.tool_calls:
-                entry["tool_calls"] = [tc.model_dump() for tc in msg.tool_calls]
+                entry["tool_calls"] = [
+                    tc.model_dump() if hasattr(tc, "model_dump") else tc for tc in msg.tool_calls
+                ]
             formatted_messages.append(entry)
 
         payload: dict[str, Any] = {
@@ -81,8 +83,12 @@ class OpenAIProviderAdapter:
         }
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
+        if self.settings.ai_reasoning_effort:
+            payload["reasoning_effort"] = self.settings.ai_reasoning_effort
         if tools:
-            payload["tools"] = [t.model_dump() for t in tools]
+            payload["tools"] = [
+                t.model_dump() if hasattr(t, "model_dump") else t for t in tools
+            ]
         return payload
 
     async def complete(

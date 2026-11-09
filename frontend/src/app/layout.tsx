@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "./tailwind-built.css";
 
 export const metadata: Metadata = {
   title: "Project Intelligence Platform",
@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="dark h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

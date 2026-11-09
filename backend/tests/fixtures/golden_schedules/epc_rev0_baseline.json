@@ -1,0 +1,336 @@
+{
+  "version_label": "Rev 0 - EPC Baseline",
+  "data_date": "2026-01-01",
+  "activities": [
+    {
+      "source_activity_id": "ACT-100",
+      "activity_code": "A1000",
+      "activity_name": "Notice to Proceed",
+      "status": "complete",
+      "planned_start": "2026-01-01",
+      "planned_finish": "2026-01-01",
+      "actual_start": "2026-01-01",
+      "actual_finish": "2026-01-01",
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 0.0,
+      "remaining_duration_hours": 0.0,
+      "physical_pct_complete": 100.0
+    },
+    {
+      "source_activity_id": "ACT-110",
+      "activity_code": "A1010",
+      "activity_name": "Site Survey & Geotechnical Investigation",
+      "status": "not_started",
+      "planned_start": "2026-01-02",
+      "planned_finish": "2026-01-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 80.0,
+      "remaining_duration_hours": 80.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-120",
+      "activity_code": "A1020",
+      "activity_name": "Civil Engineering & Structural Design",
+      "status": "not_started",
+      "planned_start": "2026-01-16",
+      "planned_finish": "2026-02-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 176.0,
+      "remaining_duration_hours": 176.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-130",
+      "activity_code": "A1030",
+      "activity_name": "Earthworks & Site Grading",
+      "status": "not_started",
+      "planned_start": "2026-01-16",
+      "planned_finish": "2026-02-10",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 80.0,
+      "free_float_hours": 80.0,
+      "original_duration_hours": 152.0,
+      "remaining_duration_hours": 152.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-140",
+      "activity_code": "A1040",
+      "activity_name": "Foundation Excavation & Piling",
+      "status": "not_started",
+      "planned_start": "2026-02-16",
+      "planned_finish": "2026-03-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 168.0,
+      "remaining_duration_hours": 168.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-150",
+      "activity_code": "A1050",
+      "activity_name": "Turbine Foundation Concrete Pour",
+      "status": "not_started",
+      "planned_start": "2026-03-16",
+      "planned_finish": "2026-04-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 184.0,
+      "remaining_duration_hours": 184.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-160",
+      "activity_code": "A1060",
+      "activity_name": "Transformer Foundation Concrete Pour",
+      "status": "not_started",
+      "planned_start": "2026-03-16",
+      "planned_finish": "2026-04-10",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 160.0,
+      "free_float_hours": 160.0,
+      "original_duration_hours": 160.0,
+      "remaining_duration_hours": 160.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-170",
+      "activity_code": "A1070",
+      "activity_name": "Gas Turbine Major Equipment Procurement",
+      "status": "not_started",
+      "planned_start": "2026-01-16",
+      "planned_finish": "2026-04-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 520.0,
+      "remaining_duration_hours": 520.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-180",
+      "activity_code": "A1080",
+      "activity_name": "Structural Steel Fabrication & Delivery",
+      "status": "not_started",
+      "planned_start": "2026-02-16",
+      "planned_finish": "2026-04-01",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 120.0,
+      "free_float_hours": 120.0,
+      "original_duration_hours": 272.0,
+      "remaining_duration_hours": 272.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-190",
+      "activity_code": "A1090",
+      "activity_name": "Gas Turbine Heavy Lift & Setting",
+      "status": "not_started",
+      "planned_start": "2026-04-16",
+      "planned_finish": "2026-04-30",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 88.0,
+      "remaining_duration_hours": 88.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-200",
+      "activity_code": "A1100",
+      "activity_name": "Balance of Plant Structural Steel Erection",
+      "status": "not_started",
+      "planned_start": "2026-04-16",
+      "planned_finish": "2026-05-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 96.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 176.0,
+      "remaining_duration_hours": 176.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-210",
+      "activity_code": "A1110",
+      "activity_name": "High-Pressure Piping Installation",
+      "status": "not_started",
+      "planned_start": "2026-05-01",
+      "planned_finish": "2026-06-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 264.0,
+      "remaining_duration_hours": 264.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-220",
+      "activity_code": "A1120",
+      "activity_name": "Electrical & Instrumentation Cabling",
+      "status": "not_started",
+      "planned_start": "2026-05-16",
+      "planned_finish": "2026-06-20",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 48.0,
+      "free_float_hours": 48.0,
+      "original_duration_hours": 208.0,
+      "remaining_duration_hours": 208.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-230",
+      "activity_code": "A1130",
+      "activity_name": "Pre-Commissioning & Loop Checks",
+      "status": "not_started",
+      "planned_start": "2026-06-16",
+      "planned_finish": "2026-07-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 176.0,
+      "remaining_duration_hours": 176.0,
+      "physical_pct_complete": 0.0
+    },
+    {
+      "source_activity_id": "ACT-240",
+      "activity_code": "A1140",
+      "activity_name": "Commercial Operation Date (COD)",
+      "status": "not_started",
+      "planned_start": "2026-07-15",
+      "planned_finish": "2026-07-15",
+      "actual_start": null,
+      "actual_finish": null,
+      "total_float_hours": 0.0,
+      "free_float_hours": 0.0,
+      "original_duration_hours": 0.0,
+      "remaining_duration_hours": 0.0,
+      "physical_pct_complete": 0.0
+    }
+  ],
+  "relationships": [
+    {
+      "predecessor_source_id": "ACT-100",
+      "successor_source_id": "ACT-110",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-110",
+      "successor_source_id": "ACT-120",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-110",
+      "successor_source_id": "ACT-130",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-110",
+      "successor_source_id": "ACT-170",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-120",
+      "successor_source_id": "ACT-140",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-120",
+      "successor_source_id": "ACT-180",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-130",
+      "successor_source_id": "ACT-140",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-140",
+      "successor_source_id": "ACT-150",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-140",
+      "successor_source_id": "ACT-160",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-150",
+      "successor_source_id": "ACT-190",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-170",
+      "successor_source_id": "ACT-190",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-180",
+      "successor_source_id": "ACT-200",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-190",
+      "successor_source_id": "ACT-210",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-200",
+      "successor_source_id": "ACT-220",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-210",
+      "successor_source_id": "ACT-230",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-220",
+      "successor_source_id": "ACT-230",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    },
+    {
+      "predecessor_source_id": "ACT-230",
+      "successor_source_id": "ACT-240",
+      "relationship_type": "FS",
+      "lag_hours": 0.0
+    }
+  ]
+}
+
